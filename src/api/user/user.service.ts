@@ -15,6 +15,10 @@ import {
   ConfirmPasswordDoesntMatchNewPasswordException,
   InvalidPasswordResetTokenException,
 } from "src/exceptions/UserExceptions";
+import { DtoGetCurrentUserResponse } from "src/api/user/dto/response/DtoGetCurrentUserResponse";
+import { DtoUpdateCurrentUserRequest } from "src/api/user/dto/request/DtoUpdateCurrentUserRequest";
+import { DtoUpdateCurrentUserResponse } from "src/api/user/dto/response/DtoUpdateCurrentUserResponse";
+import { DtoGetAllUsersResponse } from "src/api/user/dto/response/DtoGetAllUsersResponse";
 
 @Injectable()
 export class UserService {
@@ -22,11 +26,11 @@ export class UserService {
     @InjectRepository(UsersRepository)
     private usersRepository: UsersRepository,
     private jwtService: JwtService,
-    private mailService: MailService,
+    private mailService: MailService
   ) {}
 
   async sendPasswordResetToken(
-    dto: DtoSendPasswordResetTokenRequest,
+    dto: DtoSendPasswordResetTokenRequest
   ): Promise<void> {
     const { email } = dto;
 
@@ -37,7 +41,7 @@ export class UserService {
       {
         secret: configService.getJwtPasswordResetTokenSecret(),
         expiresIn: configService.getJwtPasswordResetTokenDuration(),
-      },
+      }
     );
 
     await this.mailService.sendPasswordResetEmail(email, passwordResetToken);
@@ -45,7 +49,7 @@ export class UserService {
     const salt = await bcrypt.genSalt();
     const hashedPasswordResetToken = await bcrypt.hash(
       passwordResetToken,
-      salt,
+      salt
     );
 
     await this.usersRepository.save({
@@ -69,7 +73,7 @@ export class UserService {
 
     const checkPasswordResetToken: boolean = await bcrypt.compare(
       passwordResetToken,
-      user.passwordResetToken,
+      user.passwordResetToken
     );
     if (!checkPasswordResetToken)
       throw new InvalidPasswordResetTokenException();
@@ -85,5 +89,32 @@ export class UserService {
       password,
       passwordResetToken: null,
     });
+  }
+
+  async getCurrentUser(user: User): Promise<DtoGetCurrentUserResponse> {
+    return new DtoGetCurrentUserResponse(user);
+  }
+
+  async updateCurrentUser(
+    user: User,
+    dto: DtoUpdateCurrentUserRequest
+  ): Promise<DtoUpdateCurrentUserResponse> {
+    const updatedUser = await this.usersRepository.save({ ...user, ...dto });
+
+    return new DtoUpdateCurrentUserResponse(updatedUser);
+  }
+
+  async getAllUsers(): Promise<DtoGetAllUsersResponse[]> {
+    const usersList = await this.usersRepository.find();
+
+    return usersList.map((user: User) => new DtoGetAllUsersResponse(user));
+  }
+
+  async deleteUser(user: User): Promise<void> {
+    try {
+      await this.usersRepository.deleteById(user.id);
+    } catch (e) {
+      throw new UserNotFoundException();
+    }
   }
 }

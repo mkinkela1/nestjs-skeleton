@@ -11,4 +11,10 @@ export class UsersRepository extends Repository<User> {
 
     return user;
   }
+
+  async deleteById(id: string): Promise<void> {
+    const user: User = await this.expectOne({ id });
+
+    await this.delete(user.id)
+  }
 }

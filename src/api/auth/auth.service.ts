@@ -1,7 +1,6 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { UsersRepository } from "src/api/auth/users.repository";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DtoAuthCredentials } from "src/api/auth/dto/DtoAuthCredentials";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { DtoSignInResponse } from "src/api/auth/dto/response/DtoSignInResponse";
@@ -20,6 +19,8 @@ import jwtDecode from "jwt-decode";
 import { InvalidEmailVerificationTokenException } from "src/exceptions/UserExceptions";
 import { DtoResendVerificationEmailRequest } from "src/api/auth/dto/request/DtoResendVerificationEmailRequest";
 import { User } from "src/entities/user.entity";
+import { DtoSignUpRequest } from "src/api/auth/dto/request/DtoSignUpRequest";
+import { DtoSignInRequest } from "src/api/auth/dto/request/DtoSignInRequest";
 
 @Injectable()
 export class AuthService {
@@ -27,11 +28,11 @@ export class AuthService {
     @InjectRepository(UsersRepository)
     private usersRepository: UsersRepository,
     private jwtService: JwtService,
-    private mailService: MailService,
+    private mailService: MailService
   ) {}
 
-  async signUp(dto: DtoAuthCredentials): Promise<void> {
-    const { email, password } = dto;
+  async signUp(dto: DtoSignUpRequest): Promise<void> {
+    const { email, password, firstName, lastName } = dto;
 
     const salt = await bcrypt.genSalt();
     const emailConfirmationToken: string = this.getEmailConfirmationToken({
@@ -40,11 +41,13 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, salt);
     const hashedEmailConfirmationToken: string = bcrypt.hash(
       emailConfirmationToken,
-      salt,
+      salt
     );
 
     const user = this.usersRepository.create({
       email,
+      firstName,
+      lastName,
       password: hashedPassword,
       emailConfirmationToken: hashedEmailConfirmationToken,
     });
@@ -53,15 +56,15 @@ export class AuthService {
       await this.usersRepository.save(user);
       await this.mailService.sendConfirmationEmail(
         email,
-        emailConfirmationToken,
+        emailConfirmationToken
       );
     } catch (e) {
       if (e.code === "23505") throw new EmailAlreadyExistsException();
-      else throw new InternalServerErrorException();
+      else throw new InternalServerErrorException(e);
     }
   }
 
-  async signIn(dto: DtoAuthCredentials): Promise<DtoSignInResponse> {
+  async signIn(dto: DtoSignInRequest): Promise<DtoSignInResponse> {
     const { email, password } = dto;
     const user: User = await this.usersRepository.expectOne({ email });
 
@@ -76,7 +79,7 @@ export class AuthService {
   }
 
   async refreshToken(
-    dto: DtoRefreshTokenRequest,
+    dto: DtoRefreshTokenRequest
   ): Promise<DtoRefreshTokenResponse> {
     const { refreshToken } = dto;
 
@@ -120,7 +123,7 @@ export class AuthService {
   }
 
   async resendVerificationEmail(
-    dto: DtoResendVerificationEmailRequest,
+    dto: DtoResendVerificationEmailRequest
   ): Promise<void> {
     const { email } = dto;
 
@@ -131,7 +134,7 @@ export class AuthService {
     });
     const hashedEmailConfirmationToken: string = bcrypt.hash(
       emailConfirmationToken,
-      salt,
+      salt
     );
 
     await this.usersRepository.save({

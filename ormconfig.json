@@ -1,16 +1,16 @@
 {
   "type": "postgres",
-  "host": "127.0.0.1",
+  "host": "0.0.0.0",
   "port": 5432,
   "username": "postgres",
   "password": "mysecretpassword",
   "database": "my_database",
   "migrationsTableName": "migration",
   "entities": [
-    "/Users/matteokinkela/Documents/ecommerce/packages/backend/dist/src/**/*.entity.{ts,js}"
+    "/Users/matteokinkela/Documents/nestjs-skeleton/dist/src/**/*.entity.{ts,js}"
   ],
   "migrations": [
-    "/Users/matteokinkela/Documents/ecommerce/packages/backend/dist/src/migration/*.{ts,js}"
+    "/Users/matteokinkela/Documents/nestjs-skeleton/dist/src/migration/*.{ts,js}"
   ],
   "cli": {
     "migrationsDir": "src/migration"

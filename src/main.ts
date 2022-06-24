@@ -16,8 +16,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()
-    .setTitle("Ecommerce backend")
-    .setDescription("Ecommerce API examples")
+    .setTitle("Skeleton backend")
+    .setDescription("Skeleton API examples")
     .setVersion("1.0")
     .addBearerAuth(
       {
