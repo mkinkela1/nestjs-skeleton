@@ -1,6 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { UsersRepository } from "src/api/auth/users.repository";
 import { DtoSendPasswordResetTokenRequest } from "src/api/user/dto/request/DtoSendPasswordResetTokenRequest";
 import { JwtService } from "@nestjs/jwt";
 import { MailService } from "src/mail/mail.service";
@@ -19,11 +17,11 @@ import { DtoGetCurrentUserResponse } from "src/api/user/dto/response/DtoGetCurre
 import { DtoUpdateCurrentUserRequest } from "src/api/user/dto/request/DtoUpdateCurrentUserRequest";
 import { DtoUpdateCurrentUserResponse } from "src/api/user/dto/response/DtoUpdateCurrentUserResponse";
 import { DtoGetAllUsersResponse } from "src/api/user/dto/response/DtoGetAllUsersResponse";
+import { UsersRepository } from "src/api/user/users.repository";
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UsersRepository)
     private usersRepository: UsersRepository,
     private jwtService: JwtService,
     private mailService: MailService
@@ -112,7 +110,7 @@ export class UserService {
 
   async deleteUser(user: User): Promise<void> {
     try {
-      await this.usersRepository.deleteById(user.id);
+      await this.usersRepository.delete(user.id);
     } catch (e) {
       throw new UserNotFoundException();
     }

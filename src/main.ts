@@ -11,7 +11,7 @@ import { configService } from "src/config/config.service";
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({ logger: true }),
+    new FastifyAdapter({ logger: true })
   );
   app.useGlobalPipes(new ValidationPipe());
 
@@ -23,17 +23,17 @@ async function bootstrap() {
       {
         description: `[just text field] Please enter token in following format: Bearer <JWT>`,
         name: "Authorization",
-        bearerFormat: "Bearer", // I`ve tested not to use this field, but the result was the same
+        bearerFormat: "Bearer",
         scheme: "Bearer",
-        type: "http", // I`ve attempted type: 'apiKey' too
+        type: "http",
         in: "Header",
       },
-      "JWT",
+      "JWT"
     )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, document);
 
-  await app.listen(configService.getPort());
+  await app.listen(configService.getPort(), "0.0.0.0");
 }
 bootstrap();

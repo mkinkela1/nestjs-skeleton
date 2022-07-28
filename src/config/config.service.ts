@@ -73,7 +73,7 @@ class ConfigService {
 
   public isProduction() {
     const mode = this.getValue("MODE", false);
-    return mode != "DEV";
+    return mode != "dev";
   }
 
   public getTypeOrmConfig(): TypeOrmModuleOptions {
@@ -84,15 +84,15 @@ class ConfigService {
       port: parseInt(this.getValue("POSTGRES_PORT")),
       username: this.getValue("POSTGRES_USER"),
       password: this.getValue("POSTGRES_PASSWORD"),
-      database: this.getValue("POSTGRES_DATABASE"),
+      database: this.getValue("POSTGRES_DB"),
 
-      migrationsTableName: "migration",
+      migrationsTableName: "migrations",
 
-      entities: [process.cwd() + "/dist/src/**/*.entity.{ts,js}"],
-      migrations: [process.cwd() + "/dist/src/migration/*.{ts,js}"],
+      migrations: ["dist/src/migrations/*.js"],
+      entities: ["dist/**/*.entity.js"],
 
       cli: {
-        migrationsDir: "src/migration",
+        migrationsDir: "src/migrations",
       },
 
       ssl: this.isProduction(),
@@ -105,7 +105,7 @@ const configService = new ConfigService(process.env).ensureValues([
   "POSTGRES_PORT",
   "POSTGRES_USER",
   "POSTGRES_PASSWORD",
-  "POSTGRES_DATABASE",
+  "POSTGRES_DB",
 ]);
 
 export { configService };

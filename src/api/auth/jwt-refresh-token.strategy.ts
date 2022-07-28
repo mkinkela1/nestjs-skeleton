@@ -1,21 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { InjectRepository } from "@nestjs/typeorm";
-import { UsersRepository } from "src/api/auth/users.repository";
 import { configService } from "src/config/config.service";
 import { JwtPayload } from "src/jwt-payload.interface";
 import { User } from "src/entities/user.entity";
+import { UsersRepository } from "src/api/user/users.repository";
 
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy(
   Strategy,
-  "jwt-refresh-token",
+  "jwt-refresh-token"
 ) {
-  constructor(
-    @InjectRepository(UsersRepository)
-    private usersRepository: UsersRepository,
-  ) {
+  constructor(private usersRepository: UsersRepository) {
     super({
       secretOrKey: configService.getJwtRefreshTokenSecret(),
       ignoreExpiration: false,

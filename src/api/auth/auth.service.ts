@@ -1,6 +1,4 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
-import { UsersRepository } from "src/api/auth/users.repository";
-import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { DtoSignInResponse } from "src/api/auth/dto/response/DtoSignInResponse";
@@ -21,11 +19,11 @@ import { DtoResendVerificationEmailRequest } from "src/api/auth/dto/request/DtoR
 import { User } from "src/entities/user.entity";
 import { DtoSignUpRequest } from "src/api/auth/dto/request/DtoSignUpRequest";
 import { DtoSignInRequest } from "src/api/auth/dto/request/DtoSignInRequest";
+import { UsersRepository } from "src/api/user/users.repository";
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(UsersRepository)
     private usersRepository: UsersRepository,
     private jwtService: JwtService,
     private mailService: MailService

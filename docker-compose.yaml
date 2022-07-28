@@ -1,0 +1,77 @@
+version: "3.8"
+services:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+      - postgres
+    environment:
+      - PORT=${PORT}
+      - JWT_TOKEN_SECRET=${JWT_TOKEN_SECRET}
+      - JWT_TOKEN_DURATION=1h
+      - JWT_REFRESH_TOKEN_SECRET=${JWT_REFRESH_TOKEN_SECRET}
+      - JWT_REFRESH_TOKEN_DURATION=24h
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - DEFAULT_NOREPLY_EMAIL=${DEFAULT_NOREPLY_EMAIL}
+      - JWT_PASSWORD_RESET_TOKEN_SECRET=${JWT_PASSWORD_RESET_TOKEN_SECRET}
+      - JWT_PASSWORD_RESET_TOKEN_DURATION=${JWT_PASSWORD_RESET_TOKEN_DURATION}
+      - JWT_EMAIL_CONFIRMATION_TOKEN_SECRET=${JWT_EMAIL_CONFIRMATION_TOKEN_SECRET}
+      - JWT_EMAIL_CONFIRMATION_TOKEN_DURATION=${JWT_EMAIL_CONFIRMATION_TOKEN_DURATION}
+      - MODE=${MODE}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    command: ["./wait-for-postgres.sh", "./docker-entrypoint.sh"]
+    restart: "unless-stopped"
+    ports:
+      - "8080:8080"
+    networks:
+      - nesjs-network
+    volumes:
+      - ./src:/usr/src/
+      - /usr/src/node_modules
+
+  postgres:
+    image: postgres:14.4
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    healthcheck:
+      test: echo "SELECT 1" | psql -q -p 5432 -U postgres > /dev/null
+      interval: 10s
+      timeout: 1s
+      retries: 3
+    restart: always
+    networks:
+      - nesjs-network
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    links:
+      - postgres:postgres
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    ports:
+      - "1234:80"
+    volumes:
+      - ./pgdata/pgadmin:/root/.pgadmin
+    env_file:
+      - .env
+    networks:
+      - nesjs-network
+
+networks:
+  nesjs-network:
+volumes:
+  pgdata:
