@@ -6,6 +6,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   UseGuards,
 } from "@nestjs/common";
 import { DtoSendPasswordResetTokenRequest } from "src/api/user/dto/request/DtoSendPasswordResetTokenRequest";
@@ -19,6 +20,8 @@ import { DtoGetCurrentUserResponse } from "src/api/user/dto/response/DtoGetCurre
 import { DtoUpdateCurrentUserRequest } from "src/api/user/dto/request/DtoUpdateCurrentUserRequest";
 import { DtoUpdateCurrentUserResponse } from "src/api/user/dto/response/DtoUpdateCurrentUserResponse";
 import { DtoGetAllUsersResponse } from "src/api/user/dto/response/DtoGetAllUsersResponse";
+import { DtoPaginationResult } from "src/shared/dto/DtoPaginationResult";
+import { DtoGetAllUsersPaginatedRequest } from "src/api/user/dto/request/DtoGetAllUsersPaginatedRequest";
 
 @ApiTags("User")
 @Controller("user")
@@ -50,8 +53,10 @@ export class UserController {
   @ApiBearerAuth("JWT")
   @UseGuards(JwtAuthGuard)
   @Get()
-  getAllUsers(): Promise<DtoGetAllUsersResponse[]> {
-    return this.userService.getAllUsers();
+  getAllUsersPaginated(
+    @Query() request: DtoGetAllUsersPaginatedRequest
+  ): Promise<DtoPaginationResult<DtoGetAllUsersResponse>> {
+    return this.userService.getAllUsersPaginated(request);
   }
 
   @ApiBearerAuth("JWT")

@@ -7080,6 +7080,11 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
+typeorm-cursor-pagination@^0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/typeorm-cursor-pagination/-/typeorm-cursor-pagination-0.9.1.tgz#2cd01327e3df32247ba294831a27a532d26aed74"
+  integrity sha512-u35lirTqo4mTPA5/KqLF995fjbnT7TUAnrBh1SntVxw7jhtdrz9JPuBQ5aI97B0UlqUGprBOt8n5mbW7O0CvAw==
+
 typeorm@^0.2.41:
   version "0.2.41"
   resolved "https://registry.yarnpkg.com/typeorm/-/typeorm-0.2.41.tgz#88758101ac158dc0a0a903d70eaacea2974281cc"

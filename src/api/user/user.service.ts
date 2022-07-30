@@ -18,6 +18,9 @@ import { DtoUpdateCurrentUserRequest } from "src/api/user/dto/request/DtoUpdateC
 import { DtoUpdateCurrentUserResponse } from "src/api/user/dto/response/DtoUpdateCurrentUserResponse";
 import { DtoGetAllUsersResponse } from "src/api/user/dto/response/DtoGetAllUsersResponse";
 import { UsersRepository } from "src/api/user/users.repository";
+import { DtoPaginationResult } from "src/shared/dto/DtoPaginationResult";
+import { DtoPaginationRequest } from "src/shared/dto/DtoPaginationRequest";
+import { DtoGetAllUsersPaginatedRequest } from "src/api/user/dto/request/DtoGetAllUsersPaginatedRequest";
 
 @Injectable()
 export class UserService {
@@ -102,10 +105,22 @@ export class UserService {
     return new DtoUpdateCurrentUserResponse(updatedUser);
   }
 
-  async getAllUsers(): Promise<DtoGetAllUsersResponse[]> {
-    const usersList = await this.usersRepository.find();
+  async getAllUsersPaginated(
+    request: DtoGetAllUsersPaginatedRequest
+  ): Promise<DtoPaginationResult<DtoGetAllUsersResponse>> {
+    const { search, ...meta } = request;
 
-    return usersList.map((user: User) => new DtoGetAllUsersResponse(user));
+    const {
+      data,
+      cursor: { beforeCursor, afterCursor },
+    } = await this.usersRepository.getAllPaginated(search ?? "", meta);
+
+    return new DtoPaginationResult({
+      beforeCursor,
+      afterCursor,
+      pageSize: meta.pageSize,
+      data: data.map((user: User) => new DtoGetAllUsersResponse(user)),
+    });
   }
 
   async deleteUser(user: User): Promise<void> {
