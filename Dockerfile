@@ -1,6 +1,7 @@
 FROM node:12-alpine
 
 RUN apk --update add postgresql-client
+RUN apk add --update python3 make g++\    && rm -rf /var/cache/apk/*
 
 WORKDIR /matteo/src/app
 

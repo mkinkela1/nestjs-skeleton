@@ -39,16 +39,14 @@ export class UsersRepository extends Repository<User> {
         });
     }
 
-    console.log(isNotEmpty(search));
-
     const paginator = buildPaginator({
       entity: User,
       paginationKeys: [meta.sortBy ?? "createDateTime"],
       query: {
         limit: +meta.pageSize,
         order: meta.orderBy,
-        afterCursor: meta.afterCursor,
-        beforeCursor: meta.beforeCursor,
+        afterCursor: meta.afterCursor ?? null,
+        beforeCursor: meta.beforeCursor ?? null,
       },
     });
 

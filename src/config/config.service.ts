@@ -96,6 +96,7 @@ class ConfigService {
       },
 
       ssl: this.isProduction(),
+      logging: !this.isProduction()
     };
   }
 }

@@ -7,10 +7,12 @@ import { Type } from "class-transformer";
 export class DtoPaginationRequest<T extends BaseEntity> {
   @ApiPropertyOptional()
   @IsString()
+  @IsOptional()
   beforeCursor?: string = null;
 
   @ApiPropertyOptional()
   @IsString()
+  @IsOptional()
   afterCursor?: string = null;
 
   @ApiPropertyOptional({ type: Number })
